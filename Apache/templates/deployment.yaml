@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name}}
+  labels:
+    role: webserver
+spec:
+  replicas: {{ .Values.spec.replicas}}
+  selector:
+    matchLabels:
+      app: webserver
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      containers:
+      - name: frontend
+        image: {{ .Values.image.repository}}
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        ports:
+        - containerPort: 80
+        volumeMounts:
+            - name: test
+              mountPath: /etc/apache2/conf-enabled/httpd.conf
+              subPath: httpd.conf
+      volumes:
+        - name: test
+          configMap:
+            name: sstest
+
